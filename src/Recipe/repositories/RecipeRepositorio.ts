@@ -1,31 +1,31 @@
 import { ResultSetHeader } from "mysql2";
 import connection from "../../shared/config/dataBase";
-import { MedicamentRecipe } from "../models/MedicamentRecipe";
+import { Recipe } from "../models/Recipe";
 
-export class MedicamentRecipeRepository {
+export class RecipeRepositorio {
 
-    public static async findAll(): Promise<MedicamentRecipe[]> {
+    public static async findAll(): Promise<Recipe[]> {
         const query = "SELECT * FROM medicamentRecipe";
         return new Promise((resolve, reject) => {
             connection.query(query, (error, results) => {
                 if (error) {
                     reject(error);
                 } else {
-                    const medicamentRecipes: MedicamentRecipe[] = results as MedicamentRecipe[];
+                    const medicamentRecipes: Recipe[] = results as Recipe[];
                     resolve(medicamentRecipes);
                 }
             });
         });
     }
 
-    public static async findById(medicamentRecipe_id: number): Promise<MedicamentRecipe | null> {
+    public static async findById(medicamentRecipe_id: number): Promise<Recipe | null> {
         const query = "SELECT * FROM medicamentRecipe WHERE medicamentRecipe_id = ?";
         return new Promise((resolve, reject) => {
             connection.query(query, [medicamentRecipe_id], (error, results) => {
                 if (error) {
                     reject(error);
                 } else {
-                    const medicamentRecipes: MedicamentRecipe[] = results as MedicamentRecipe[];
+                    const medicamentRecipes: Recipe[] = results as Recipe[];
                     if (medicamentRecipes.length > 0) {
                         resolve(medicamentRecipes[0]);
                     } else {
@@ -36,7 +36,7 @@ export class MedicamentRecipeRepository {
         });
     }
 
-    public static async createMedicamentRecipe(medicamentRecipe: MedicamentRecipe): Promise<MedicamentRecipe> {
+    public static async createMedicamentRecipe(medicamentRecipe: Recipe): Promise<Recipe> {
         const { date, doctor, medicaments, history, created_at, created_by, updated_at, updated_by, deleted } = medicamentRecipe;
         const query = `
             INSERT INTO medicamentRecipe (date, doctor, medicaments, history, created_at, created_by, updated_at, updated_by, deleted)
@@ -50,14 +50,14 @@ export class MedicamentRecipeRepository {
                     reject(error);
                 } else {
                     const createdMedicamentRecipeId = (result as any).insertId;
-                    const createdMedicamentRecipe: MedicamentRecipe = { ...medicamentRecipe, medicamentRecipe_id: createdMedicamentRecipeId };
+                    const createdMedicamentRecipe: Recipe = { ...medicamentRecipe, medicamentRecipe_id: createdMedicamentRecipeId };
                     resolve(createdMedicamentRecipe);
                 }
             });
         });
     }
 
-    public static async updateMedicamentRecipe(medicamentRecipe_id: number, updatedData: MedicamentRecipe): Promise<MedicamentRecipe | null> {
+    public static async updateMedicamentRecipe(medicamentRecipe_id: number, updatedData: Recipe): Promise<Recipe | null> {
         const { date, doctor, medicaments, history, updated_at, updated_by, deleted } = updatedData;
         const query = `
             UPDATE medicamentRecipe
@@ -72,7 +72,7 @@ export class MedicamentRecipeRepository {
                     reject(error);
                 } else {
                     if ((result as any).affectedRows > 0) {
-                        resolve({ ...updatedData, medicamentRecipe_id: medicamentRecipe_id });
+                        resolve({ ...updatedData, medicamentRecipe_id });
                     } else {
                         resolve(null);
                     }

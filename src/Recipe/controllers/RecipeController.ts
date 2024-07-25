@@ -1,10 +1,9 @@
 import { Request, Response } from 'express';
-import { MedicamentRecipe } from '../models/MedicamentRecipe';
-import { MedicamentRecipeService } from '../services/MedicamentRecipeServices';
-
+import { Recipe } from '../models/Recipe';
+import { RecipeService } from '../services/RecipeServices';
 export const getAllMedicamentRecipes = async (_req: Request, res: Response) => {
     try {
-        const medicamentRecipes = await MedicamentRecipeService.getAllMedicamentRecipes();
+        const medicamentRecipes = await RecipeService.getAllMedicamentRecipes();
         res.status(200).json(medicamentRecipes);
     } catch (error: any) {
         res.status(500).json({ error: error.message });
@@ -14,7 +13,7 @@ export const getAllMedicamentRecipes = async (_req: Request, res: Response) => {
 export const getMedicamentRecipeById = async (req: Request, res: Response) => {
     try {
         const medicamentRecipeId = parseInt(req.params.medicamentRecipe_id, 10);
-        const medicamentRecipe = await MedicamentRecipeService.getMedicamentRecipeById(medicamentRecipeId);
+        const medicamentRecipe = await RecipeService.getMedicamentRecipeById(medicamentRecipeId);
         if (medicamentRecipe) {
             res.status(200).json(medicamentRecipe);
         } else {
@@ -27,8 +26,8 @@ export const getMedicamentRecipeById = async (req: Request, res: Response) => {
 
 export const createMedicamentRecipe = async (req: Request, res: Response) => {
     try {
-        const newMedicamentRecipe: MedicamentRecipe = req.body;
-        const createdMedicamentRecipe = await MedicamentRecipeService.addMedicamentRecipe(newMedicamentRecipe);
+        const newMedicamentRecipe: Recipe = req.body;
+        const createdMedicamentRecipe = await RecipeService.addMedicamentRecipe(newMedicamentRecipe);
         res.status(201).json(createdMedicamentRecipe);
     } catch (error: any) {
         res.status(500).json({ error: error.message });
@@ -38,8 +37,8 @@ export const createMedicamentRecipe = async (req: Request, res: Response) => {
 export const updateMedicamentRecipe = async (req: Request, res: Response) => {
     try {
         const medicamentRecipeId = parseInt(req.params.medicamentRecipe_id, 10);
-        const updatedMedicamentRecipeData: MedicamentRecipe = req.body;
-        const updatedMedicamentRecipe = await MedicamentRecipeService.modifyMedicamentRecipe(medicamentRecipeId, updatedMedicamentRecipeData);
+        const updatedMedicamentRecipeData: Recipe = req.body;
+        const updatedMedicamentRecipe = await RecipeService.modifyMedicamentRecipe(medicamentRecipeId, updatedMedicamentRecipeData);
         if (updatedMedicamentRecipe) {
             res.status(200).json(updatedMedicamentRecipe);
         } else {
@@ -53,7 +52,7 @@ export const updateMedicamentRecipe = async (req: Request, res: Response) => {
 export const deleteMedicamentRecipe = async (req: Request, res: Response) => {
     try {
         const medicamentRecipeId = parseInt(req.params.medicamentRecipe_id, 10);
-        const deleted = await MedicamentRecipeService.deleteMedicamentRecipe(medicamentRecipeId);
+        const deleted = await RecipeService.deleteMedicamentRecipe(medicamentRecipeId);
         if (deleted) {
             res.status(200).json({ message: 'Receta de medicamento eliminada correctamente.' });
         } else {

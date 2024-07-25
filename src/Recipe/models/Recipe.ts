@@ -1,5 +1,5 @@
-export interface MedicamentRecipe{
-    medicamentRecipe_id : number  | null;
+export interface Recipe {
+    medicamentRecipe_id: number | null;
     date: string;
     doctor: string;
     medicaments: string;
@@ -10,4 +10,3 @@ export interface MedicamentRecipe{
     updated_by: string;
     deleted: boolean;
 }
-

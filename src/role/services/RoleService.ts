@@ -1,6 +1,6 @@
 import { RoleRepositorio } from "../repositories/RoleRepositorio";
 import { Role } from "../models/Role";
-import { DateUtils } from "../../shared/utils/DateUtils"; 
+import { DateUtils } from "../../shared/utils/DateUtils";
 
 export class RoleService {
 
@@ -32,19 +32,19 @@ export class RoleService {
 
     public static async modifyRole(roleId: number, roleData: Role): Promise<Role | null> {
         try {
-            const roleFinded = await RoleRepositorio.findById(roleId);
-            if (roleFinded) {
-                if (roleData.rol) {
-                    roleFinded.rol = roleData.rol;
+            const roleFound = await RoleRepositorio.findById(roleId);
+            if (roleFound) {
+                if (roleData.name) {
+                    roleFound.name = roleData.name;
                 }
                 if (roleData.deleted !== undefined) {
-                    roleFinded.deleted = roleData.deleted;
+                    roleFound.deleted = roleData.deleted;
                 }
             } else {
                 return null;
             }
-            roleFinded.updated_at = DateUtils.formatDate(new Date());
-            return await RoleRepositorio.updateRole(roleId, roleFinded);
+            roleFound.updated_at = DateUtils.formatDate(new Date());
+            return await RoleRepositorio.updateRole(roleId, roleFound);
         } catch (error: any) {
             throw new Error(`Error al modificar el rol: ${error.message}`);
         }

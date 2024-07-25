@@ -1,6 +1,6 @@
 import { MedicalAppinetRepositorio } from "../repositories/medicalAppoinetRepositorio";
 import { MedicalAppinet } from "../models/MedicalAppoinet";
-import { DateUtils } from "../../shared/utils/DateUtils"; 
+import { DateUtils } from "../../shared/utils/DateUtils";
 
 export class MedicalAppoinetService {
 
@@ -22,8 +22,8 @@ export class MedicalAppoinetService {
 
     public static async addMedicalAppoinet(medicalAppoinet: MedicalAppinet) {
         try {
-            medicalAppoinet.created_at = DateUtils.formatDate(new Date()); 
-            medicalAppoinet.updated_at = DateUtils.formatDate(new Date()); 
+            medicalAppoinet.created_at = DateUtils.formatDate(new Date());
+            medicalAppoinet.updated_at = DateUtils.formatDate(new Date());
             return await MedicalAppinetRepositorio.createMedicalAppoinet(medicalAppoinet);
         } catch (error: any) {
             throw new Error(`Error al crear cita médica: ${error.message}`);
@@ -32,22 +32,28 @@ export class MedicalAppoinetService {
 
     public static async modifyMedicalAppoinet(medicalAppoinetId: number, medicalAppoinetData: MedicalAppinet) {
         try {
-            const medicalAppoinetFinded = await MedicalAppinetRepositorio.findById(medicalAppoinetId);
-            if (medicalAppoinetFinded) {
-                if (medicalAppoinetData.date) {
-                    medicalAppoinetFinded.date = medicalAppoinetData.date;
+            const medicalAppoinetFound = await MedicalAppinetRepositorio.findById(medicalAppoinetId);
+            if (medicalAppoinetFound) {
+                if (medicalAppoinetData.dateAppoinet) {
+                    medicalAppoinetFound.dateAppoinet = medicalAppoinetData.dateAppoinet;
                 }
                 if (medicalAppoinetData.hour) {
-                    medicalAppoinetFinded.hour = medicalAppoinetData.hour;
+                    medicalAppoinetFound.hour = medicalAppoinetData.hour;
+                }
+                if (medicalAppoinetData.status_id_fk !== undefined) {
+                    medicalAppoinetFound.status_id_fk = medicalAppoinetData.status_id_fk;
+                }
+                if (medicalAppoinetData.updated_by) {
+                    medicalAppoinetFound.updated_by = medicalAppoinetData.updated_by;
                 }
                 if (medicalAppoinetData.deleted !== undefined) {
-                    medicalAppoinetFinded.deleted = medicalAppoinetData.deleted;
+                    medicalAppoinetFound.deleted = medicalAppoinetData.deleted;
                 }
             } else {
                 return null;
             }
-            medicalAppoinetFinded.updated_at = DateUtils.formatDate(new Date());
-            return await MedicalAppinetRepositorio.updateMedicalAppoinet(medicalAppoinetId, medicalAppoinetFinded);
+            medicalAppoinetFound.updated_at = DateUtils.formatDate(new Date());
+            return await MedicalAppinetRepositorio.updateMedicalAppoinet(medicalAppoinetId, medicalAppoinetFound);
         } catch (error: any) {
             throw new Error(`Error al modificar cita médica: ${error.message}`);
         }

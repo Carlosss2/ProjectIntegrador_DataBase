@@ -2,7 +2,7 @@ import { ResultSetHeader } from "mysql2";
 import connection from "../../shared/config/dataBase";
 import { MedicalHistory } from "../models/MedicalHistory";
 
-export class MedicalHistoryRepositorio {
+export class MedicalHistoryRepository {
 
     public static async findAll(): Promise<MedicalHistory[]> {
         const query = "SELECT * FROM medicalHistory";
@@ -37,34 +37,34 @@ export class MedicalHistoryRepositorio {
     }
 
     public static async createMedicalHistory(medicalHistory: MedicalHistory): Promise<MedicalHistory> {
-        const { user_id_fk, date, name, created_at, created_by, updated_at, updated_by, deleted } = medicalHistory;
+        const { user_id_fk, asunto, diagnostico, medicamentos, created_at, created_by, updated_at, updated_by, deleted } = medicalHistory;
         const query = `
-            INSERT INTO medicalHistory (paciente_id_fk, date, name, created_at, created_by, updated_at, updated_by, deleted)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO medicalHistory (user_id_fk, asunto, diagnostico, medicamentos, created_at, created_by, updated_at, updated_by, deleted)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
-        const values = [user_id_fk, date, name, created_at, created_by, updated_at, updated_by, deleted ? 1 : 0];
+        const values = [user_id_fk, asunto, diagnostico, medicamentos, created_at, created_by, updated_at, updated_by, deleted ? 1 : 0];
 
         return new Promise((resolve, reject) => {
             connection.query(query, values, (error, result) => {
                 if (error) {
                     reject(error);
                 } else {
-                    const createMedicalHistoryId = (result as any).insertId;
-                    const createMedicalHistory: MedicalHistory = { ...medicalHistory, medicalHistory_id: createMedicalHistoryId };
-                    resolve(createMedicalHistory);
+                    const createdMedicalHistoryId = (result as any).insertId;
+                    const createdMedicalHistory: MedicalHistory = { ...medicalHistory, medicalHistory_id: createdMedicalHistoryId };
+                    resolve(createdMedicalHistory);
                 }
             });
         });
     }
 
-    public static async updateMedicalHistory(medicalHistory_id: number, userData: MedicalHistory): Promise<MedicalHistory | null> {
-        const { user_id_fk, date, name, updated_at, updated_by, deleted } = userData;
+    public static async updateMedicalHistory(medicalHistory_id: number, updatedData: MedicalHistory): Promise<MedicalHistory | null> {
+        const { user_id_fk, asunto, diagnostico, medicamentos, updated_at, updated_by, deleted } = updatedData;
         const query = `
             UPDATE medicalHistory
-            SET paciente_id_fk = ?, date = ?, name = ?, updated_at = ?, updated_by = ?, deleted = ?
+            SET user_id_fk = ?, asunto = ?, diagnostico = ?, medicamentos = ?, updated_at = ?, updated_by = ?, deleted = ?
             WHERE medicalHistory_id = ?
         `;
-        const values = [user_id_fk, date, name, updated_at, updated_by, deleted ? 1 : 0, medicalHistory_id];
+        const values = [user_id_fk, asunto, diagnostico, medicamentos, updated_at, updated_by, deleted ? 1 : 0, medicalHistory_id];
 
         return new Promise((resolve, reject) => {
             connection.query(query, values, (error, result) => {
@@ -72,7 +72,7 @@ export class MedicalHistoryRepositorio {
                     reject(error);
                 } else {
                     if ((result as any).affectedRows > 0) {
-                        resolve({ ...userData, medicalHistory_id: medicalHistory_id });
+                        resolve({ ...updatedData, medicalHistory_id });
                     } else {
                         resolve(null);
                     }

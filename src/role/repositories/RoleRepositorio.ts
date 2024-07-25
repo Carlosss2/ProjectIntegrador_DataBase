@@ -2,6 +2,7 @@ import { ResultSetHeader } from "mysql2";
 import connection from "../../shared/config/dataBase";
 import { Role } from "../models/Role";
 
+
 export class RoleRepositorio {
 
     public static async findAll(): Promise<Role[]> {
@@ -37,12 +38,12 @@ export class RoleRepositorio {
     }
 
     public static async createRole(role: Role): Promise<Role> {
-        const {rol, created_at, created_by, updated_at, updated_by, deleted } = role;
+        const { name, created_at, created_by, updated_at, updated_by, deleted } = role;
         const query = `
-            INSERT INTO role (user_id_fk, rol, created_at, created_by, updated_at, updated_by, deleted)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO role (name, created_at, created_by, updated_at, updated_by, deleted)
+            VALUES (?, ?, ?, ?, ?, ?)
         `;
-        const values = [ rol, created_at, created_by, updated_at, updated_by, deleted ? 1 : 0];
+        const values = [name, created_at, created_by, updated_at, updated_by, deleted ? 1 : 0];
 
         return new Promise((resolve, reject) => {
             connection.query(query, values, (error, result) => {
@@ -58,13 +59,13 @@ export class RoleRepositorio {
     }
 
     public static async updateRole(rol_id: number, roleData: Role): Promise<Role | null> {
-        const {  rol, updated_at, updated_by, deleted } = roleData;
+        const { name, updated_at, updated_by, deleted } = roleData;
         const query = `
             UPDATE role
-            SET user_id_fk=?, rol=?, updated_at=?, updated_by=?, deleted=?
+            SET name=?, updated_at=?, updated_by=?, deleted=?
             WHERE rol_id=?
         `;
-        const values = [ rol, updated_at, updated_by, deleted ? 1 : 0, rol_id];
+        const values = [name, updated_at, updated_by, deleted ? 1 : 0, rol_id];
 
         return new Promise((resolve, reject) => {
             connection.query(query, values, (error, result) => {
@@ -74,7 +75,7 @@ export class RoleRepositorio {
                     if ((result as any).affectedRows > 0) {
                         resolve({ ...roleData, rol_id: rol_id });
                     } else {
-                        resolve(null); 
+                        resolve(null);
                     }
                 }
             });
