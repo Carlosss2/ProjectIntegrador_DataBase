@@ -22,8 +22,6 @@ export class RoleService {
 
     public static async addRole(role: Role): Promise<Role> {
         try {
-            role.created_at = DateUtils.formatDate(new Date());
-            role.updated_at = DateUtils.formatDate(new Date());
             return await RoleRepositorio.createRole(role);
         } catch (error: any) {
             throw new Error(`Error al crear el rol: ${error.message}`);
@@ -37,13 +35,9 @@ export class RoleService {
                 if (roleData.name) {
                     roleFound.name = roleData.name;
                 }
-                if (roleData.deleted !== undefined) {
-                    roleFound.deleted = roleData.deleted;
-                }
             } else {
                 return null;
             }
-            roleFound.updated_at = DateUtils.formatDate(new Date());
             return await RoleRepositorio.updateRole(roleId, roleFound);
         } catch (error: any) {
             throw new Error(`Error al modificar el rol: ${error.message}`);

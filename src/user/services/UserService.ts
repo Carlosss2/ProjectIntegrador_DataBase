@@ -1,6 +1,5 @@
 import { UserRepositorio } from "../repositories/UserRepositorio";
 import { User } from "../models/User";
-import { DateUtils } from "../../shared/utils/DateUtils";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
@@ -62,8 +61,6 @@ export class UserService {
     public static async addUser(user: User): Promise<User> {
         try {
             const salt = await bcrypt.genSalt(saltRounds);
-            user.created_at = DateUtils.formatDate(new Date());
-            user.updated_at = DateUtils.formatDate(new Date());
             user.password = await bcrypt.hash(user.password, salt);
             return await UserRepositorio.createUser(user);
         } catch (error: any) {
@@ -94,16 +91,9 @@ export class UserService {
                 if (userData.rol_id_fk !== undefined) {
                     userFound.rol_id_fk = userData.rol_id_fk;
                 }
-                if (userData.updated_by) {
-                    userFound.updated_by = userData.updated_by;
-                }
-                if (userData.deleted !== undefined) {
-                    userFound.deleted = userData.deleted;
-                }
             } else {
                 return null;
             }
-            userFound.updated_at = DateUtils.formatDate(new Date());
             userFound.password = await bcrypt.hash(userFound.password, salt);
 
             return await UserRepositorio.updateUser(userId, userFound);

@@ -38,12 +38,12 @@ export class RoleRepositorio {
     }
 
     public static async createRole(role: Role): Promise<Role> {
-        const { name, created_at, created_by, updated_at, updated_by, deleted } = role;
+        const { rol_id ,name } = role;
         const query = `
-            INSERT INTO role (name, created_at, created_by, updated_at, updated_by, deleted)
-            VALUES (?, ?, ?, ?, ?, ?)
+            INSERT INTO role (rol_id ,name)
+            VALUES (?, ?)
         `;
-        const values = [name, created_at, created_by, updated_at, updated_by, deleted ? 1 : 0];
+        const values = [rol_id ,name ? 1 : 0];
 
         return new Promise((resolve, reject) => {
             connection.query(query, values, (error, result) => {
@@ -59,13 +59,13 @@ export class RoleRepositorio {
     }
 
     public static async updateRole(rol_id: number, roleData: Role): Promise<Role | null> {
-        const { name, updated_at, updated_by, deleted } = roleData;
+        const { name} = roleData;
         const query = `
             UPDATE role
             SET name=?, updated_at=?, updated_by=?, deleted=?
             WHERE rol_id=?
         `;
-        const values = [name, updated_at, updated_by, deleted ? 1 : 0, rol_id];
+        const values = [name ? 1 : 0, rol_id];
 
         return new Promise((resolve, reject) => {
             connection.query(query, values, (error, result) => {

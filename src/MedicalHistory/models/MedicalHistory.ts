@@ -10,4 +10,3 @@ export interface MedicalHistory{
     updated_by: string;
     deleted: boolean;
 }
-

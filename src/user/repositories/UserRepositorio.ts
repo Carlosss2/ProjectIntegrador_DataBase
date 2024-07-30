@@ -56,12 +56,12 @@ export class UserRepositorio {
 
 
     public static async createUser(user: User): Promise<User> {
-        const { name, password, email, phoneNumber, rol, created_at, created_by, updated_at, updated_by, deleted } = user;
+        const { first_name, last_name, password, email, phoneNumber, rol_id_fk } = user;
         const query = `
-            INSERT INTO user (name, password, email, phoneNumber, rol, created_at, created_by, updated_at, updated_by, deleted)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO user (first_name, last_name, password, email, phoneNumber, rol_id_fk)
+            VALUES (?, ?, ?, ?, ?, ?)
         `;
-        const values = [name, password, email, phoneNumber, rol, created_at, created_by, updated_at, updated_by, deleted ? 1 : 0];
+        const values = [first_name, last_name, password, email, phoneNumber, rol_id_fk ? 1 : 0];
 
         return new Promise((resolve, reject) => {
             connection.query(query, values, (error, result) => {
@@ -77,13 +77,13 @@ export class UserRepositorio {
     }
 
     public static async updateUser(user_id: number, userData: User): Promise<User | null> {
-        const { name, password, email, phoneNumber, rol, updated_at, updated_by, deleted } = userData;
+        const { first_name, last_name, password, email, phoneNumber, rol_id_fk } = userData;
         const query = `
             UPDATE user
-            SET name=?, password=?, email=?, phoneNumber=?, rol=?, updated_at=?, updated_by=?, deleted=?
+            SET first_name=?, last_name=?, password=?, email=?, phoneNumber=?, rol_id_fk=?
             WHERE user_id=?
         `;
-        const values = [name, password, email, phoneNumber, rol, updated_at, updated_by, deleted ? 1 : 0, user_id];
+        const values = [first_name, last_name, password, email, phoneNumber, rol_id_fk ? 1 : 0, user_id];
 
         return new Promise((resolve, reject) => {
             connection.query(query, values, (error, result) => {
