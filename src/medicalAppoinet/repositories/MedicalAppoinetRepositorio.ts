@@ -6,7 +6,17 @@ import { User } from '../../user/models/User'
 export class MedicalAppoinetRepositorio {
 
     public static async findAll(): Promise<MedicalAppoinet[]> {
-        const query = "SELECT * FROM medicalAppoinet";
+        const query = `WITH RankedAppointments AS (
+                        SELECT
+                        medicalAppoinet.*,
+                        user.*,
+                        ROW_NUMBER() OVER (PARTITION BY pacienteID ORDER BY citaID) AS rn
+                        FROM medicalAppoinet
+                        NATURAL JOIN user
+                        WHERE estado = "Pendiente")
+                        SELECT *
+                        FROM RankedAppointments
+                        WHERE rn = 1;`;
         return new Promise((resolve, reject) => {
             connection.query(query, (error, results) => {
                 if (error) {

@@ -5,7 +5,6 @@ export const loginUser= async (req: Request, res: Response) => {
     const {email, password } = req.body;
     try {
       const token = await UserService.login(email, password);
-      console.log(token[1]);
       if (!token) {
         res.status(401).json({ message: 'Invalid full name or password' });
       }else{

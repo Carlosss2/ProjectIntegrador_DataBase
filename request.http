@@ -77,3 +77,6 @@ Content-Type: application/json
         "phone_number":"9671951292"
     }
 }
+
+###
+GET http://localhost:3000/api/medicalAppoinet/
