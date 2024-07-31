@@ -12,8 +12,7 @@ export const getAllDoctors = async (req: Request, res: Response) => {
 
 export const getDoctorById = async (req: Request, res: Response) => {
     try {
-        const email = req.body
-        const doctor = await DoctorService.getDoctorByEmail(email);
+        const doctor = await DoctorService.getDoctorByEmail();
         if (doctor) {
             res.status(200).json(doctor);
         } else {

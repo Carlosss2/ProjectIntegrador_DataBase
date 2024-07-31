@@ -19,7 +19,7 @@ POST http://localhost:3000/api/user/login/ HTTP/1.1
 Content-Type: application/json
 
 {
-    "email":"example@example123.com",
+    "email":"example@example.com",
     "password":"example123"
 }
 
@@ -31,6 +31,9 @@ Content-Type: application/json
     "doctor_id": "1",
     "role_id" : "1"
 }
+
+###
+GET http://localhost:3000/api/doctor/asistente/ HTTP/1.1
 
 ###
 GET http://localhost:3000/api/doctor/ HTTP/1.1

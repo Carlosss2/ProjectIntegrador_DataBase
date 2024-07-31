@@ -14,9 +14,9 @@ export class DoctorService {
         }
     }
 
-    public static async getDoctorByEmail(email: string): Promise<Doctor | null> {
+    public static async getDoctorByEmail(): Promise<Secretary[] | null> {
         try {
-            return await DoctorRepositorio.findByEmail(email);
+            return await DoctorRepositorio.findByEmail();
         } catch (error: any) {
             throw new Error(`Error al encontrar el doctor: ${error.message}`);
         }

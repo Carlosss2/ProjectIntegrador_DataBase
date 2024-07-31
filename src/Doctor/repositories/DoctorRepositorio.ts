@@ -19,16 +19,16 @@ export class DoctorRepositorio {
         });
     }
 
-    public static async findByEmail(email: string): Promise<Doctor | null> {
-        const query = "SELECT password,names  FROM doctor natural JOIN user WHERE email = ? ";
+    public static async findByEmail(): Promise<Secretary[] | null> {
+        const query = "SELECT * FROM secretary NATURAL JOIN user; ";
         return new Promise((resolve, reject) => {
-            connection.query(query, [email], (error, results) => {
+            connection.query(query, (error, results) => {
                 if (error) {
                     reject(error);
                 } else {
-                    const doctors: Doctor[] = results as Doctor[];
-                    if (doctors.length > 0) {
-                        resolve(doctors[0]);
+                    const secretarias: Secretary[] = results as Secretary[];
+                    if (secretarias.length > 0) {
+                        resolve(secretarias);
                     } else {
                         resolve(null);
                     }

@@ -4,7 +4,7 @@ import { getAllDoctors, getDoctorById, createNewSecretary} from "../controllers/
 const doctorRoutes: Router = Router();
 
 doctorRoutes.get('/', getAllDoctors);
-doctorRoutes.get('/:doctor_id', getDoctorById);
+doctorRoutes.get('/asistente', getDoctorById);
 doctorRoutes.post('/asistente', createNewSecretary)
 
 
