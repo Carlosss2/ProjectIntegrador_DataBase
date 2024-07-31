@@ -1,4 +1,6 @@
 export interface Secretary {
-    secretary : number | null;
-    name : string;
+    secretaryID : number | null;
+    doctorID: number;
+    userID: number;
+    roleID: number;
 }

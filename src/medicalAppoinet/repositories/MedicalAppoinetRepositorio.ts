@@ -1,31 +1,32 @@
 import { ResultSetHeader } from "mysql2";
 import connection from "../../shared/config/dataBase";
-import { MedicalAppinet } from "../models/MedicalAppoinet";
+import { MedicalAppoinet } from "../models/MedicalAppoinet";
+import { User } from '../../user/models/User'
 
-export class MedicalAppinetRepositorio {
+export class MedicalAppoinetRepositorio {
 
-    public static async findAll(): Promise<MedicalAppinet[]> {
+    public static async findAll(): Promise<MedicalAppoinet[]> {
         const query = "SELECT * FROM medicalAppoinet";
         return new Promise((resolve, reject) => {
             connection.query(query, (error, results) => {
                 if (error) {
                     reject(error);
                 } else {
-                    const medical: MedicalAppinet[] = results as MedicalAppinet[];
+                    const medical: MedicalAppoinet[] = results as MedicalAppoinet[];
                     resolve(medical);
                 }
             });
         });
     }
 
-    public static async findById(medicalAppoinet_id: number): Promise<MedicalAppinet | null> {
-        const query = "SELECT * FROM medicalAppoinet WHERE medicalAppoinet_id = ?";
+    public static async findById(citaID: number): Promise<MedicalAppoinet | null> {
+        const query = "SELECT * FROM medicalAppoinet WHERE citaID = ?";
         return new Promise((resolve, reject) => {
-            connection.query(query, [ medicalAppoinet_id], (error, results) => {
+            connection.query(query, [ citaID], (error, results) => {
                 if (error) {
                     reject(error);
                 } else {
-                    const medicals: MedicalAppinet[] = results as MedicalAppinet[];
+                    const medicals: MedicalAppoinet[] = results as MedicalAppoinet[];
                     if (medicals.length > 0) {
                         resolve(medicals[0]);
                     } else {
@@ -36,35 +37,52 @@ export class MedicalAppinetRepositorio {
         });
     }
 
-    public static async createMedicalAppoinet(medical: MedicalAppinet): Promise<MedicalAppinet> {
-        const { user_id_fk,  date,  dateAppoinet, hour, created_by, updated_at, updated_by, deleted } = medical;
-        const query = `
-            INSERT INTO medicalAppoinet (paciente_id_fk,  date,  dateAppoinet, hour, created_by, updated_at, updated_by, deleted)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-        `;
-        const values = [user_id_fk,  date,  dateAppoinet, hour, created_by, updated_at, updated_by, deleted ? 1 : 0];
+    public static async createMedicalAppoinet(paciente: User, medical: MedicalAppoinet): Promise<MedicalAppoinet> {
+        let {doctorID, pacienteID, fecha, estado} = medical;
+        const {names, last_name, email, phone_number} = paciente;   
+        const createdUser: any = await connection.promise().execute(
+            `INSERT INTO user (names, last_name, email, phone_number, roleID) VALUES (?, ?, ?, ?, ?)`,
+            [names, last_name, email, phone_number, 3]
+        );
+        let userID:number = 0;
+        if (createdUser) {
+            userID = createdUser[0].insertId;
+        }
+        const createdPatient: any = await connection.promise().execute(
+            `INSERT INTO pacient (roleID, userID) VALUES (3, ?)`,
+            [userID]
+        );
+        if (createdPatient) {
+            pacienteID = createdPatient[0].insertId
+        }
 
+        const query = `
+        INSERT INTO medicalAppoinet (doctorID, pacienteID, fecha, estado)
+        VALUES (?, ?, ?, ?)
+        `;
+    const values = [doctorID, pacienteID, fecha, estado];
         return new Promise((resolve, reject) => {
             connection.query(query, values, (error, result) => {
                 if (error) {
                     reject(error);
                 } else {
-                    const createMedicalAppoinetId = (result as any).insertId;
-                    const createMedicalAppoinet: MedicalAppinet = { ...medical, medicalAppoinet_id: createMedicalAppoinetId };
+                    const createcitaID = (result as any).insertId;
+                    const createMedicalAppoinet: MedicalAppoinet = { ...medical, citaID: createcitaID };
                     resolve(createMedicalAppoinet);
                 }
             });
         });
     }
     
-    public static async updateMedicalAppoinet(medicalAppoinet_id: number, userData: MedicalAppinet): Promise<MedicalAppinet | null> {
-        const {  user_id_fk,  date,  dateAppoinet, hour, updated_at, updated_by, deleted } = userData;
+    
+    public static async updateMedicalAppoinet(citaID: number, userData: MedicalAppoinet): Promise<MedicalAppoinet | null> {
+        const {fecha, estado } = userData;
         const query = `
             UPDATE medicalAppoinet
-            SET  paciente_id_fk=?,  date=?,  dateAppoinet=?, hour=?, updated_at = ?, updated_by = ?, deleted = ?
-            WHERE medicalAppoinet_id = ?
+            estado = ?
+            WHERE citaID = ?
         `;
-        const values = [ user_id_fk,  date,  dateAppoinet, hour, updated_at, updated_by, deleted ? 1 : 0, medicalAppoinet_id];
+        const values = [ estado ? 1 : 0, citaID];
 
         return new Promise((resolve, reject) => {
             connection.query(query, values, (error, result) => {
@@ -72,7 +90,7 @@ export class MedicalAppinetRepositorio {
                     reject(error);
                 } else {
                     if ((result as any).affectedRows > 0) {
-                        resolve({ ...userData, medicalAppoinet_id: medicalAppoinet_id });
+                        resolve({ ...userData, citaID: citaID });
                     } else {
                         resolve(null); 
                     }
@@ -81,10 +99,10 @@ export class MedicalAppinetRepositorio {
         });
     }
 
-    public static async deleteMedicalAppoinet(medicalAppoinet_id: number): Promise<boolean> {
-        const query = 'DELETE FROM medicalAppoinet WHERE medicalAppoinet_id = ?';
+    public static async deleteMedicalAppoinet(citaID: number): Promise<boolean> {
+        const query = 'DELETE FROM medicalAppoinet WHERE citaID = ?';
         return new Promise((resolve, reject) => {
-            connection.query(query, [medicalAppoinet_id], (error, result) => {
+            connection.query(query, [citaID], (error, result) => {
                 if (error) {
                     reject(error);
                 } else {

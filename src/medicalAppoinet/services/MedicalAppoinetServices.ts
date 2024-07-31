@@ -1,67 +1,51 @@
-import { MedicalAppinetRepositorio } from "../repositories/medicalAppoinetRepositorio";
-import { MedicalAppinet } from "../models/MedicalAppoinet";
-import { DateUtils } from "../../shared/utils/DateUtils";
+import { MedicalAppoinetRepositorio } from "../repositories/medicalAppoinetRepositorio";
+import { MedicalAppoinet } from "../models/MedicalAppoinet";
+import { User } from "../../user/models/User";
 
 export class MedicalAppoinetService {
 
-    public static async getAllMedicalAppoinet(): Promise<MedicalAppinet[]> {
+    public static async getAllMedicalAppoinet(): Promise<MedicalAppoinet[]> {
         try {
-            return await MedicalAppinetRepositorio.findAll();
+            return await MedicalAppoinetRepositorio.findAll();
         } catch (error: any) {
             throw new Error(`Error al obtener citas médicas: ${error.message}`);
         }
     }
 
-    public static async getMedicalAppoinetById(medicalAppoinetId: number): Promise<MedicalAppinet | null> {
+    public static async getMedicalAppoinetById(citaID: number): Promise<MedicalAppoinet | null> {
         try {
-            return await MedicalAppinetRepositorio.findById(medicalAppoinetId);
+            return await MedicalAppoinetRepositorio.findById(citaID);
         } catch (error: any) {
             throw new Error(`Error al encontrar cita médica: ${error.message}`);
         }
     }
 
-    public static async addMedicalAppoinet(medicalAppoinet: MedicalAppinet) {
+    public static async addMedicalAppoinet(paciente: User, cita: MedicalAppoinet) {
         try {
-            medicalAppoinet.created_at = DateUtils.formatDate(new Date());
-            medicalAppoinet.updated_at = DateUtils.formatDate(new Date());
-            return await MedicalAppinetRepositorio.createMedicalAppoinet(medicalAppoinet);
+            return await MedicalAppoinetRepositorio.createMedicalAppoinet(paciente, cita);
         } catch (error: any) {
+            console.log(error);
             throw new Error(`Error al crear cita médica: ${error.message}`);
         }
     }
 
-    public static async modifyMedicalAppoinet(medicalAppoinetId: number, medicalAppoinetData: MedicalAppinet) {
+    public static async modifyMedicalAppoinet(citaID: number, medicalAppoinetData: MedicalAppoinet) {
         try {
-            const medicalAppoinetFound = await MedicalAppinetRepositorio.findById(medicalAppoinetId);
+            const medicalAppoinetFound = await MedicalAppoinetRepositorio.findById(citaID);
             if (medicalAppoinetFound) {
-                if (medicalAppoinetData.dateAppoinet) {
-                    medicalAppoinetFound.dateAppoinet = medicalAppoinetData.dateAppoinet;
-                }
-                if (medicalAppoinetData.hour) {
-                    medicalAppoinetFound.hour = medicalAppoinetData.hour;
-                }
-                if (medicalAppoinetData.status_id_fk !== undefined) {
-                    medicalAppoinetFound.status_id_fk = medicalAppoinetData.status_id_fk;
-                }
-                if (medicalAppoinetData.updated_by) {
-                    medicalAppoinetFound.updated_by = medicalAppoinetData.updated_by;
-                }
-                if (medicalAppoinetData.deleted !== undefined) {
-                    medicalAppoinetFound.deleted = medicalAppoinetData.deleted;
-                }
+                medicalAppoinetFound.estado = medicalAppoinetData.estado;
             } else {
                 return null;
             }
-            medicalAppoinetFound.updated_at = DateUtils.formatDate(new Date());
-            return await MedicalAppinetRepositorio.updateMedicalAppoinet(medicalAppoinetId, medicalAppoinetFound);
+            return await MedicalAppoinetRepositorio.updateMedicalAppoinet(citaID, medicalAppoinetFound);
         } catch (error: any) {
             throw new Error(`Error al modificar cita médica: ${error.message}`);
         }
     }
 
-    public static async deleteMedicalAppoinet(medicalAppoinetId: number): Promise<boolean> {
+    public static async deleteMedicalAppoinet(citaID: number): Promise<boolean> {
         try {
-            return await MedicalAppinetRepositorio.deleteMedicalAppoinet(medicalAppoinetId);
+            return await MedicalAppoinetRepositorio.deleteMedicalAppoinet(citaID);
         } catch (error: any) {
             throw new Error(`Error al eliminar cita médica: ${error.message}`);
         }

@@ -19,11 +19,6 @@ export const authMiddleware = async (req: AuthRequest, res: Response, next: Next
   try{
 
     const payload = jwt.verify(token, secretKey) as UserPayload;
-    const employee = await UserRepositorio.findById(payload.user_id);
-
-    if (!employee) {
-      return res.status(401).json({ message: 'Invalid token' });
-    }
   
     req.userData = payload;
     next();

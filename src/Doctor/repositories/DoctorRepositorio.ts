@@ -1,6 +1,7 @@
-import { ResultSetHeader } from "mysql2";
 import connection from "../../shared/config/dataBase";
 import { Doctor } from "../models/Doctor";
+import { Secretary } from "../../Secretary/models/Secretary"
+import { User } from "../../user/models/User";
 
 export class DoctorRepositorio {
 
@@ -18,10 +19,10 @@ export class DoctorRepositorio {
         });
     }
 
-    public static async findById(doctor_id: number): Promise<Doctor | null> {
-        const query = "SELECT * FROM doctor WHERE doctor_id = ?";
+    public static async findByEmail(email: string): Promise<Doctor | null> {
+        const query = "SELECT password,names  FROM doctor natural JOIN user WHERE email = ? ";
         return new Promise((resolve, reject) => {
-            connection.query(query, [doctor_id], (error, results) => {
+            connection.query(query, [email], (error, results) => {
                 if (error) {
                     reject(error);
                 } else {
@@ -36,65 +37,37 @@ export class DoctorRepositorio {
         });
     }
 
-    public static async createDoctor(doctor: Doctor): Promise<Doctor> {
-        const { user_id_fk, created_at, created_by, updated_at, updated_by, deleted } = doctor;
-        const query = `
-            INSERT INTO doctor (user_id_fk, created_at, created_by, updated_at, updated_by, deleted)
-            VALUES (?, ?, ?, ?, ?, ?)
-        `;
-        const values = [user_id_fk, created_at, created_by, updated_at, updated_by, deleted ? 1 : 0];
+    public static async createNewSecretary(secretary: Secretary, user: User): Promise<Secretary | null>{
+        try {
+            const {names, last_name, password, email, phone_number}= user;
+            const {doctorID, roleID} = secretary; 
 
-        return new Promise((resolve, reject) => {
-            connection.query(query, values, (error, result) => {
-                if (error) {
+            const query2 = `INSERT INTO secretary (doctorID, userID,roleID) VALUES (?, ?, ?)`
+
+            return new Promise(async (resolve, reject) => {
+                
+                const createdUser: any = await connection.promise().execute(
+                    `INSERT INTO user (names, last_name, password, email, phone_number, roleID) VALUES (?, ?, ?, ?, ?, 2)`,
+                    [names, last_name, password, email, phone_number]
+                );
+                let userID:number = 0;
+                if (createdUser) {
+                    userID = createdUser[0].insertId;
+                }
+                const values = [doctorID, userID,roleID]
+                connection.query(query2, values, (error, result) =>{
+                if (error){
                     reject(error);
                 } else {
-                    const createDoctorId = (result as any).insertId;
-                    const createdDoctor: Doctor = { ...doctor, doctor_id: createDoctorId };
-                    resolve(createdDoctor);
+                    const createSecreta = (result as any).secretaryID;
+                    const createdSecretary:Secretary = {...secretary, secretaryID: createSecreta}
+                    resolve(createdSecretary); 
                 }
-            });
-        });
-    }
-
-    public static async updateDoctor(doctor_id: number, doctorData: Doctor): Promise<Doctor | null> {
-        const { user_id_fk, updated_at, updated_by, deleted } = doctorData;
-        const query = `
-            UPDATE doctor
-            SET user_id_fk=?, updated_at=?, updated_by=?, deleted=?
-            WHERE doctor_id=?
-        `;
-        const values = [user_id_fk, updated_at, updated_by, deleted ? 1 : 0, doctor_id];
-
-        return new Promise((resolve, reject) => {
-            connection.query(query, values, (error, result) => {
-                if (error) {
-                    reject(error);
-                } else {
-                    if ((result as any).affectedRows > 0) {
-                        resolve({ ...doctorData, doctor_id: doctor_id });
-                    } else {
-                        resolve(null);
-                    }
-                }
-            });
-        });
-    }
-
-    public static async deleteDoctor(doctor_id: number): Promise<boolean> {
-        const query = 'DELETE FROM doctor WHERE doctor_id = ?';
-        return new Promise((resolve, reject) => {
-            connection.query(query, [doctor_id], (error, result) => {
-                if (error) {
-                    reject(error);
-                } else {
-                    if ((result as ResultSetHeader).affectedRows > 0) {
-                        resolve(true);
-                    } else {
-                        resolve(false);
-                    }
-                }
-            });
-        });
+              })
+            })
+        } catch (error) {
+            console.error();
+            return null;
+        }
     }
 }

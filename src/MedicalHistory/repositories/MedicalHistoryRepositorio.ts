@@ -37,12 +37,12 @@ export class MedicalHistoryRepository {
     }
 
     public static async createMedicalHistory(medicalHistory: MedicalHistory): Promise<MedicalHistory> {
-        const { user_id_fk, asunto, diagnostico, medicamentos, created_at, created_by, updated_at, updated_by, deleted } = medicalHistory;
+        const {historyID, asunto, diagnostico, medication, doctorID, pacientID} = medicalHistory;
         const query = `
-            INSERT INTO medicalHistory (user_id_fk, asunto, diagnostico, medicamentos, created_at, created_by, updated_at, updated_by, deleted)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO medicalHistory (historyID, asunto, diagnostico, medication, doctorID, pacientID)
+            VALUES (?, ?, ?, ?, ?, ?)
         `;
-        const values = [user_id_fk, asunto, diagnostico, medicamentos, created_at, created_by, updated_at, updated_by, deleted ? 1 : 0];
+        const values = [historyID, asunto, diagnostico, medication, doctorID, pacientID ? 1 : 0];
 
         return new Promise((resolve, reject) => {
             connection.query(query, values, (error, result) => {
@@ -50,7 +50,7 @@ export class MedicalHistoryRepository {
                     reject(error);
                 } else {
                     const createdMedicalHistoryId = (result as any).insertId;
-                    const createdMedicalHistory: MedicalHistory = { ...medicalHistory, medicalHistory_id: createdMedicalHistoryId };
+                    const createdMedicalHistory: MedicalHistory = { ...medicalHistory, historyID: createdMedicalHistoryId };
                     resolve(createdMedicalHistory);
                 }
             });
@@ -58,13 +58,13 @@ export class MedicalHistoryRepository {
     }
 
     public static async updateMedicalHistory(medicalHistory_id: number, updatedData: MedicalHistory): Promise<MedicalHistory | null> {
-        const { user_id_fk, asunto, diagnostico, medicamentos, updated_at, updated_by, deleted } = updatedData;
+        const {diagnostico, medication} = updatedData;
         const query = `
             UPDATE medicalHistory
-            SET user_id_fk = ?, asunto = ?, diagnostico = ?, medicamentos = ?, updated_at = ?, updated_by = ?, deleted = ?
+            SET historyID = ?, asunto = ?, diagnostico = ?, medication = ?
             WHERE medicalHistory_id = ?
         `;
-        const values = [user_id_fk, asunto, diagnostico, medicamentos, updated_at, updated_by, deleted ? 1 : 0, medicalHistory_id];
+        const values = [diagnostico, medication ? 1 : 0, medicalHistory_id];
 
         return new Promise((resolve, reject) => {
             connection.query(query, values, (error, result) => {
@@ -72,7 +72,7 @@ export class MedicalHistoryRepository {
                     reject(error);
                 } else {
                     if ((result as any).affectedRows > 0) {
-                        resolve({ ...updatedData, medicalHistory_id });
+                        resolve({ ...updatedData});
                     } else {
                         resolve(null);
                     }

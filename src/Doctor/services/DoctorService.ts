@@ -1,6 +1,8 @@
 import { DoctorRepositorio } from "../repositories/DoctorRepositorio";
 import { Doctor } from "../models/Doctor";
-import { DateUtils } from "../../shared/utils/DateUtils";
+import { Secretary } from "../../Secretary/models/Secretary";
+import { User } from "../../user/models/User";
+import bcrypt from 'bcrypt';
 
 export class DoctorService {
 
@@ -12,49 +14,22 @@ export class DoctorService {
         }
     }
 
-    public static async getDoctorById(doctorId: number): Promise<Doctor | null> {
+    public static async getDoctorByEmail(email: string): Promise<Doctor | null> {
         try {
-            return await DoctorRepositorio.findById(doctorId);
+            return await DoctorRepositorio.findByEmail(email);
         } catch (error: any) {
             throw new Error(`Error al encontrar el doctor: ${error.message}`);
         }
     }
 
-    public static async addDoctor(doctor: Doctor): Promise<Doctor> {
+    public static async createNewSecretary(secretary: Secretary, user: User): Promise<Secretary|null>{
         try {
-            doctor.created_at = DateUtils.formatDate(new Date());
-            doctor.updated_at = DateUtils.formatDate(new Date());
-            return await DoctorRepositorio.createDoctor(doctor);
-        } catch (error: any) {
-            throw new Error(`Error al crear el doctor: ${error.message}`);
+            const salt = await bcrypt.genSalt(10);
+            user.password = await bcrypt.hash(user.password, salt);
+            return await DoctorRepositorio.createNewSecretary(secretary, user);
+        } catch (error:any) {
+            throw new Error(`Error al crear un doctor: ${error.message}`);
         }
     }
 
-    public static async modifyDoctor(doctorId: number, doctorData: Doctor): Promise<Doctor | null> {
-        try {
-            const doctorFound = await DoctorRepositorio.findById(doctorId);
-            if (doctorFound) {
-                if (doctorData.user_id_fk) {
-                    doctorFound.user_id_fk = doctorData.user_id_fk;
-                }
-                if (doctorData.deleted !== undefined) {
-                    doctorFound.deleted = doctorData.deleted;
-                }
-            } else {
-                return null;
-            }
-            doctorFound.updated_at = DateUtils.formatDate(new Date());
-            return await DoctorRepositorio.updateDoctor(doctorId, doctorFound);
-        } catch (error: any) {
-            throw new Error(`Error al modificar el doctor: ${error.message}`);
-        }
-    }
-
-    public static async deleteDoctor(doctorId: number): Promise<boolean> {
-        try {
-            return await DoctorRepositorio.deleteDoctor(doctorId);
-        } catch (error: any) {
-            throw new Error(`Error al eliminar el doctor: ${error.message}`);
-        }
-    }
 }
