@@ -4,9 +4,9 @@ import { getAllMedicalAppoinets, getMedicalAppoinetById, updateMedicalAppoinet, 
 const medicalAppoinetRoutes: Router = Router();
 
 medicalAppoinetRoutes.get('/', getAllMedicalAppoinets);
-medicalAppoinetRoutes.get('/:medicalAppoinet_id', getMedicalAppoinetById);
+medicalAppoinetRoutes.get('/:citaID', getMedicalAppoinetById);
 medicalAppoinetRoutes.post('/', createMedicalAppoinet);
-medicalAppoinetRoutes.put('/:medicalAppoinet_id', updateMedicalAppoinet);
-medicalAppoinetRoutes.delete('/:medicalAppoinet_id', deleteMedicalAppoinet);
+medicalAppoinetRoutes.put('/:citaID', updateMedicalAppoinet);
+medicalAppoinetRoutes.delete('/:citaID', deleteMedicalAppoinet);
 
 export default medicalAppoinetRoutes;

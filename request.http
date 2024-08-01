@@ -1,0 +1,85 @@
+//Metodos de usuarios
+POST http://localhost:3000/api/user/ HTTP/1.1
+Content-Type: application/json
+
+{
+    "names":"Michi Michi",
+    "last_name":"Papu",
+    "password":"michi123",
+    "email":"example@simon.com",
+    "phone_number":"9854215789",
+    "roleID":"1"
+}
+
+###
+GET http://localhost:3000/api/user/
+
+###
+POST http://localhost:3000/api/user/login/ HTTP/1.1
+Content-Type: application/json
+
+{
+    "email":"example@example.com",
+    "password":"example123"
+}
+
+###
+POST  http://localhost:3000/api/doctor/ HTTP/1.1
+Content-Type: application/json
+
+{
+    "doctor_id": "1",
+    "role_id" : "1"
+}
+
+###
+GET http://localhost:3000/api/doctor/asistente/ HTTP/1.1
+
+###
+GET http://localhost:3000/api/doctor/ HTTP/1.1
+Content-Type: application/json
+
+{
+    "doctor_id": "1",
+    "role_id":"1"
+}
+
+###
+POST http://localhost:3000/api/doctor/asistente/ HTTP/1.1
+Content-Type: application/json
+
+{
+    "secretary":{
+        "doctorID": "1",
+        "roleID":"2"
+    },
+    "user":{
+        "names":"Michi",
+        "last_name":"Maikol",
+        "password":"michi123",
+        "email":"michi@example.com",
+        "phone_number":"8957412548"
+    }
+}
+
+###
+POST http://localhost:3000/api/medicalAppoinet/ HTTP/1.1
+Content-Type: application/json
+
+{
+    "cita":{
+        "doctorID":"1",
+        "fecha":"12/08/2024",
+        "estado":"Pendiente"
+    },
+    "paciente":{
+        "names":"Michel",
+        "last_name":"Vazquez",
+        "password":"",
+        "email":"example@upchiapas",
+        "phone_number":"9671951292"
+    }
+}
+
+###
+GET http://localhost:3000/api/medicalAppoinet/
